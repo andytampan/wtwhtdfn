@@ -1,0 +1,11 @@
+{
+  "wtwhtdfn": {
+    "": "Well, this will have to do for now.",
+    "description": "This mod enable Overlap",
+    
+    "settings": {
+      "enableOverlap": "Enable Overlap"
+    }
+
+  }
+}

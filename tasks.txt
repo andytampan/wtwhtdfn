@@ -1,0 +1,6 @@
+* newMod -name "wtwhtdfn"
+* copy -toMod "wtwhtdfn" -from "D:\star\OPUS MAGNUM\wtwhtdfn\modMeta.jsonc"
+* copy -toMod "wtwhtdfn" -from "D:\star\OPUS MAGNUM\wtwhtdfn\bin\Debug\net10.0\wtwhtdfn.dll"
+* copy -toMod "wtwhtdfn" -from "D:\star\OPUS MAGNUM\wtwhtdfn\bin\Debug\net10.0\wtwhtdfn.pdb"
+* copy -toMod "wtwhtdfn" -from "D:\star\OPUS MAGNUM\wtwhtdfn\bin\Debug\net10.0\wtwhtdfn.xml"
+* copy -toMod "wtwhtdfn" -from "D:\star\OPUS MAGNUM\wtwhtdfn\Content"
