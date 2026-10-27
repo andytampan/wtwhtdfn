@@ -4,7 +4,13 @@
     "description": "This is a Quality of Life work in progress mods",
     
     "settings": {
-      "enableOverlap": "Enable Overlap"
+      "enableOverlap": "Enable overlap",
+      "disableUnique": "Enable multiple input/output",
+      "keybinds": {
+        "disjointSplit": "Disjoint track split hotkey",
+        "regularSplit": "Regular track split hotkey",
+        "reverseTrack": "Reverse track hotkey"
+      }
     }
 
   }

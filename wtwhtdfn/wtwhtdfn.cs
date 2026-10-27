@@ -13,19 +13,6 @@ namespace wtwhtdfn
 
         public override void Load() { }
 
-        public static bool overlapEnabled = false;
-
-        public static Keybinding disjointSplit = new ("\\");
-
-        public static Keybinding regularSplit = new("/");
-        public override void ApplySettings()
-        {
-            overlapEnabled = MQSettings.Instance.enableOverlap;
-            disjointSplit = MQSettings.Instance.disjointSplit;
-            regularSplit = MQSettings.Instance.regularSplit;
-            base.ApplySettings();
-            
-        }
         public override void LoadContent()
         {
 
@@ -48,9 +35,14 @@ namespace wtwhtdfn
             [SettingsLabelKey("wtwhtdfn.settings.disableUnique")]
             public bool disableUnique = false;
 
-            [SettingsLabelKey("wtwhtdfn.setting.keybinds")]
+            [SettingsLabelKey("wtwhtdfn.settings.keybinds.disjointSplit")]
             public Keybinding disjointSplit = new ("\\");
+
+            [SettingsLabelKey("wtwhtdfn.settings.keybinds.regularSplit")]
             public Keybinding regularSplit = new("/");
+
+            [SettingsLabelKey("wtwhtdfn.settings.keybinds.reverseTrack")]
+            public Keybinding mirrorTrack = new(";");
         }
 
     }

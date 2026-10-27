@@ -27,7 +27,20 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
     public extern Maybe<IInputMode> orig_Process(SolutionEditorScreen solEditScrn);
     public Maybe<IInputMode> Process(SolutionEditorScreen solEditScrn)
     {
-        if (wtwhtdfn.wtwhtdfn.regularSplit.Pressed())
+        if (wtwhtdfn.wtwhtdfn.MQSettings.Instance.mirrorTrack.Pressed())
+        {
+            if (draggedParts.Count == 1)
+            {
+                Part track = draggedParts[0].part;
+                if (track.GetType() == PartTypes.track)
+                {
+                    patch_Part oldpart = draggedParts[0].part as patch_Part;
+                    oldpart.trackHexes.Reverse();
+                    Volume.PlaySound(Assets.sounds.click_button, 1);
+                }
+            }
+        }
+        if (wtwhtdfn.wtwhtdfn.MQSettings.Instance.regularSplit.Pressed())
         {
             if (draggedParts.Count == 1)
             {
@@ -43,8 +56,7 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                     newPartA.SetHexPosAndUpdate(coordinate);
                     if (oldPart.trackHexes.Count < 2) return orig_Process(solEditScrn);
 
-                    bool handle = true;
-                    HexIndex handleHex = new HexIndex(0,0);
+                    HexIndex? handleHex = new HexIndex(0,0);
                     
                     foreach (HexIndex hex in oldPart.trackHexes)
                     {
@@ -53,14 +65,18 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                         {
                             
                             newPartB.SetHexPosAndUpdate(hex);
-                            handle = false;
+                            
                             handleHex = hex - coordinate;
                         };
 
-                        if (handle) newPartA.AddTrackFront(hex);
+                        if (handleHex.HasValue)
+                        {
+                            newPartB.AddTrackFront(hex - handleHex.Value);
+                        }
                         else
                         {
-                            newPartB.AddTrackFront(hex - handleHex);
+                            newPartA.AddTrackFront(hex);
+                            
                         }
 
 
@@ -85,11 +101,11 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                     draggedPartB.part = newPartB;
                     draggedParts.Add(draggedPartB);
 
-                    Volume.PlaySound(Assets.sounds.click_button, 1);
+                    Volume.PlaySound(Assets.sounds.glyph_unbonding, 1);
                 }
             }
         }
-        if (wtwhtdfn.wtwhtdfn.disjointSplit.Pressed()) {
+        if (wtwhtdfn.wtwhtdfn.MQSettings.Instance.disjointSplit.Pressed()) {
             if (draggedParts.Count == 1)
             {
                 Part track = draggedParts[0].part;
@@ -122,7 +138,7 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                     draggedPart.part = newPart;
                     draggedParts.Add(draggedPart);
                     
-                    Volume.PlaySound(Assets.sounds.click_button, 1);
+                    Volume.PlaySound(Assets.sounds.glyph_unbonding, 1);
                 }
             }
         }
@@ -150,7 +166,7 @@ public class patch_Solution
         {
             
             bool yea = orig_IsAllowedPlacement(part, otherInputOutputIndex, offset, rotationOffset, out errorMessage);
-            if (errorMessage == Translations.Translate("There is already another part here.") && wtwhtdfn.wtwhtdfn.overlapEnabled) return true ;
+            if (errorMessage == Translations.Translate("There is already another part here.") && wtwhtdfn.wtwhtdfn.MQSettings.Instance.enableOverlap) return true ;
             return yea;
         }
 }
@@ -287,40 +303,6 @@ public class patch_SolutionEditorScreen : SolutionEditorScreen
     }
 
 }
-
-/*public class patch_SolutionEditorPartsPanel
-{
-    [MonoMod.MonoModILInject("AddTypeToToolbar")]
-
-    public static void AddTypeToToolbar(MethodDefinition method, CustomAttribute attribute)
-    {
-        ILCursor cursor = new (new ILContext(method));
-
-        cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStloc3());
-        cursor.TryGotoNext(MoveType.After, instr => instr.MatchStloc3());
-        cursor.EmitLdnull();
-        cursor.EmitStloc3();
-    /*
-
-    [MonoMod.MonoModILInject("AddTypeToToolbar")]
-    
-    public static void AddTypeToToolbar(MethodDefinition method, CustomAttribute attribute) this code works for but not output
-    {
-        ILCursor cursor = new(new ILContext(method));
-
-        cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStloc3());
-        cursor.TryGotoNext(MoveType.After, instr => instr.MatchStloc3());
-        cursor.EmitLdnull();
-        cursor.EmitStloc3();
-        
-
-
-
-    }
-
-
-}
-*/
 public class patch_PartTypeForToolbar
 {
     [MonoModIgnore]
@@ -329,7 +311,7 @@ public class patch_PartTypeForToolbar
 
     public static PartTypeForToolbar Make(PartType type, int indexOfType, bool isAvailable, bool hasPerms) 
     {
-        return orig_Make(type, indexOfType, true, hasPerms);
+        return orig_Make(type, indexOfType, wtwhtdfn.wtwhtdfn.MQSettings.Instance.disableUnique || isAvailable, hasPerms);
 
     }
 }
