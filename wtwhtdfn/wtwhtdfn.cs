@@ -15,11 +15,14 @@ namespace wtwhtdfn
 
         public static bool overlapEnabled = false;
 
-        public static Keybinding splitTracks = new ("M");
+        public static Keybinding disjointSplit = new ("\\");
+
+        public static Keybinding regularSplit = new("/");
         public override void ApplySettings()
         {
             overlapEnabled = MQSettings.Instance.enableOverlap;
-            splitTracks = MQSettings.Instance.splitTracks;
+            disjointSplit = MQSettings.Instance.disjointSplit;
+            regularSplit = MQSettings.Instance.regularSplit;
             base.ApplySettings();
             
         }
@@ -46,7 +49,8 @@ namespace wtwhtdfn
             public bool disableUnique = false;
 
             [SettingsLabelKey("wtwhtdfn.setting.keybinds")]
-            public Keybinding splitTracks = new ("M");
+            public Keybinding disjointSplit = new ("\\");
+            public Keybinding regularSplit = new("/");
         }
 
     }

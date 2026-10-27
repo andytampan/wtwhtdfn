@@ -27,8 +27,8 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
     public extern Maybe<IInputMode> orig_Process(SolutionEditorScreen solEditScrn);
     public Maybe<IInputMode> Process(SolutionEditorScreen solEditScrn)
     {
-         
-        if (wtwhtdfn.wtwhtdfn.splitTracks.Pressed()) {
+        if (wtwhtdfn.wtwhtdfn.regularSplit.Pressed())
+        {
             if (draggedParts.Count == 1)
             {
                 Part track = draggedParts[0].part;
@@ -37,27 +37,89 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                     patch_Part oldPart = track as patch_Part;
 
                     patch_Part newPartA = new Part(PartTypes.track, false) as patch_Part;
+                    patch_Part newPartB = new Part(PartTypes.track, false) as patch_Part;
 
                     var coordinate = oldPart.GetHexPos();
                     newPartA.SetHexPosAndUpdate(coordinate);
+                    if (oldPart.trackHexes.Count < 2) return orig_Process(solEditScrn);
+
+                    bool handle = true;
+                    HexIndex handleHex = new HexIndex(0,0);
+                    
+                    foreach (HexIndex hex in oldPart.trackHexes)
+                    {
+
+                        if (hex == selectedHex - coordinate)
+                        {
+                            
+                            newPartB.SetHexPosAndUpdate(hex);
+                            handle = false;
+                            handleHex = hex - coordinate;
+                        };
+
+                        if (handle) newPartA.AddTrackFront(hex);
+                        else
+                        {
+                            newPartB.AddTrackFront(hex - handleHex);
+                        }
+
+
+                    }
+                    if (newPartA.trackHexes.Count > 1)
+                    {
+                        newPartA.RemoveTrackBack();
+                    }
+
+                    if (newPartB.trackHexes.Count > 1)
+                    {
+                        newPartB.RemoveTrackBack();
+                    }
+
+                    newPartA.trackHexes.Reverse();
+                    draggedParts.Clear();
+
+                    DraggedPart draggedPartA = new DraggedPart();
+                    draggedPartA.part = newPartA;
+                    draggedParts.Add(draggedPartA);
+                    DraggedPart draggedPartB = new DraggedPart();
+                    draggedPartB.part = newPartB;
+                    draggedParts.Add(draggedPartB);
+
+                    Volume.PlaySound(Assets.sounds.click_button, 1);
+                }
+            }
+        }
+        if (wtwhtdfn.wtwhtdfn.disjointSplit.Pressed()) {
+            if (draggedParts.Count == 1)
+            {
+                Part track = draggedParts[0].part;
+                if (track.GetType() == PartTypes.track)
+                {
+                    patch_Part oldPart = track as patch_Part;
+
+                    patch_Part newPart = new Part(PartTypes.track, false) as patch_Part;
+
+                    var coordinate = oldPart.GetHexPos();
+                    newPart.SetHexPosAndUpdate(coordinate);
                     if (oldPart.trackHexes.Count < 2) return orig_Process(solEditScrn);
                     
        
                     foreach ( HexIndex hex in oldPart.trackHexes)
                     {
 
-                        if (hex != selectedHex-coordinate) newPartA.AddTrackFront(hex);
+                        if (hex != selectedHex-coordinate) newPart.AddTrackFront(hex);
 
                     }
+                    if (newPart.trackHexes.Count > 1)
+                    {
+                        newPart.RemoveTrackBack();
+                    }
 
-                    
-                    newPartA.RemoveTrackBack();
-                    
-                    newPartA.trackHexes.Reverse();
+                    newPart.trackHexes.Reverse();
                     draggedParts.Clear();
 
                     DraggedPart draggedPart = new DraggedPart();
-                    draggedPart.part = newPartA;
+                    draggedPart.part = newPart;
                     draggedParts.Add(draggedPart);
                     
                     Volume.PlaySound(Assets.sounds.click_button, 1);
