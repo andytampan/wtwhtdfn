@@ -13,10 +13,13 @@ namespace wtwhtdfn
 
         public override void Load() { }
 
-        public static bool enabled = false;
+        public static bool overlapEnabled = false;
+
+        public static Keybinding splitTracks = new ("M");
         public override void ApplySettings()
         {
-            enabled = MQSettings.Instance.enableOverlap;
+            overlapEnabled = MQSettings.Instance.enableOverlap;
+            splitTracks = MQSettings.Instance.splitTracks;
             base.ApplySettings();
             
         }
@@ -38,6 +41,12 @@ namespace wtwhtdfn
             public static MQSettings Instance => wtwhtdfn.Instance.Settings as MQSettings;
             [SettingsLabelKey("wtwhtdfn.settings.enableOverlap")]
             public bool enableOverlap = false;
+
+            [SettingsLabelKey("wtwhtdfn.settings.disableUnique")]
+            public bool disableUnique = false;
+
+            [SettingsLabelKey("wtwhtdfn.setting.keybinds")]
+            public Keybinding splitTracks = new ("M");
         }
 
     }

@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <Reference Include="DevLightning">
-      <HintPath>$(OpusDir)\DevLightning_MetalQuintessence.dll</HintPath>
+      <HintPath>$(OpusDir)\DevLightning\DevLightning_wtwhtdfn.dll</HintPath>
       <Private>false</Private>
       <CopyLocal>False</CopyLocal>
     </Reference>

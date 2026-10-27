@@ -1,15 +1,82 @@
-﻿using Mono.Cecil.Cil;
+﻿using Mono.Cecil;
+using Mono.Cecil.Cil;
 using MonoMod;
 using MonoMod.Cil;
 using MonoMod.InlineRT;
 using Quintessential;
+using Quintessential.Settings;
+using SDL2;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Mono.Cecil;
 using System.Linq;
+using System.Text;
+using static PartDraggingInputMode;
 
-using static System.Net.Mime.MediaTypeNames;
+
+public class patch_PartDraggingInputMode : PartDraggingInputMode
+{
+    public patch_PartDraggingInputMode() : base()
+    {
+    }
+
+    [MonoModPublic]
+    public List<PartDraggingInputMode.DraggedPart> draggedParts;
+    public HexIndex selectedHex;
+
+    [MonoModIgnore]
+    public extern Maybe<IInputMode> orig_Process(SolutionEditorScreen solEditScrn);
+    public Maybe<IInputMode> Process(SolutionEditorScreen solEditScrn)
+    {
+         
+        if (wtwhtdfn.wtwhtdfn.splitTracks.Pressed()) {
+            if (draggedParts.Count == 1)
+            {
+                Part track = draggedParts[0].part;
+                if (track.GetType() == PartTypes.track)
+                {
+                    patch_Part oldPart = track as patch_Part;
+
+                    patch_Part newPartA = new Part(PartTypes.track, false) as patch_Part;
+
+                    var coordinate = oldPart.GetHexPos();
+                    newPartA.SetHexPosAndUpdate(coordinate);
+                    if (oldPart.trackHexes.Count < 2) return orig_Process(solEditScrn);
+                    
+       
+                    foreach ( HexIndex hex in oldPart.trackHexes)
+                    {
+
+                        if (hex != selectedHex-coordinate) newPartA.AddTrackFront(hex);
+
+                    }
+
+                    
+                    newPartA.RemoveTrackBack();
+                    
+                    newPartA.trackHexes.Reverse();
+                    draggedParts.Clear();
+
+                    DraggedPart draggedPart = new DraggedPart();
+                    draggedPart.part = newPartA;
+                    draggedParts.Add(draggedPart);
+                    
+                    Volume.PlaySound(Assets.sounds.click_button, 1);
+                }
+            }
+        }
+        return orig_Process(solEditScrn);
+    }
+}
+public class patch_Part : Part
+{
+    [MonoModPublic]
+    public List<HexIndex> trackHexes;
+
+    public patch_Part(PartType type, bool isFixed) : base(type, isFixed)
+    {
+    }
+}
+
 public class patch_Solution
     {
 
@@ -21,7 +88,7 @@ public class patch_Solution
         {
             
             bool yea = orig_IsAllowedPlacement(part, otherInputOutputIndex, offset, rotationOffset, out errorMessage);
-            if (errorMessage == Translations.Translate("There is already another part here.") && wtwhtdfn.wtwhtdfn.enabled) return true ;
+            if (errorMessage == Translations.Translate("There is already another part here.") && wtwhtdfn.wtwhtdfn.overlapEnabled) return true ;
             return yea;
         }
 }
@@ -159,4 +226,48 @@ public class patch_SolutionEditorScreen : SolutionEditorScreen
 
 }
 
+/*public class patch_SolutionEditorPartsPanel
+{
+    [MonoMod.MonoModILInject("AddTypeToToolbar")]
 
+    public static void AddTypeToToolbar(MethodDefinition method, CustomAttribute attribute)
+    {
+        ILCursor cursor = new (new ILContext(method));
+
+        cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStloc3());
+        cursor.TryGotoNext(MoveType.After, instr => instr.MatchStloc3());
+        cursor.EmitLdnull();
+        cursor.EmitStloc3();
+    /*
+
+    [MonoMod.MonoModILInject("AddTypeToToolbar")]
+    
+    public static void AddTypeToToolbar(MethodDefinition method, CustomAttribute attribute) this code works for but not output
+    {
+        ILCursor cursor = new(new ILContext(method));
+
+        cursor.TryGotoNext(MoveType.Before, instr => instr.MatchStloc3());
+        cursor.TryGotoNext(MoveType.After, instr => instr.MatchStloc3());
+        cursor.EmitLdnull();
+        cursor.EmitStloc3();
+        
+
+
+
+    }
+
+
+}
+*/
+public class patch_PartTypeForToolbar
+{
+    [MonoModIgnore]
+    public extern static PartTypeForToolbar orig_Make(PartType type, int indexOfType, bool isAvailable, bool hasPerms);
+
+
+    public static PartTypeForToolbar Make(PartType type, int indexOfType, bool isAvailable, bool hasPerms) 
+    {
+        return orig_Make(type, indexOfType, true, hasPerms);
+
+    }
+}
