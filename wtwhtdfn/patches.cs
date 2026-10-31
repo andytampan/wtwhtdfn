@@ -27,6 +27,42 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
     public extern Maybe<IInputMode> orig_Process(SolutionEditorScreen solEditScrn);
     public Maybe<IInputMode> Process(SolutionEditorScreen solEditScrn)
     {
+        if (wtwhtdfn.wtwhtdfn.MQSettings.Instance.mergeTrack.Pressed())
+        {
+            if (draggedParts.Count == 2)
+            {
+                Part trackA = draggedParts[0].part;
+                Part trackB = draggedParts[1].part;
+                if (trackA.GetType() == trackB.GetType() && trackB.GetType() == PartTypes.track)
+                {
+                    HexIndex trackAOriginCoordinate = trackA.GetHexPos();
+                    HexIndex trackBOriginCoordinate = trackB.GetHexPos();
+                    HexIndex trackStartA = trackA.InFrontBy(trackA.GetTrack()[0]);
+                    HexIndex trackStartB = trackB.InFrontBy(trackB.GetTrack()[0]);
+                    HexIndex trackEndA = trackA.InFrontBy(trackA.GetTrack()[trackA.GetTrack().Count-1]);
+                    HexIndex trackEndB = trackB.InFrontBy(trackB.GetTrack()[trackB.GetTrack().Count-1]);
+
+                    if (wtwhtdfn.wtwhtdfn.HexSide(trackEndA, trackStartB)) {
+                        Part mergedTrack = new Part(PartTypes.track, false);
+                        mergedTrack.RemoveTrackFront();
+                        foreach (HexIndex hex in trackA.GetTrack()) {
+                            mergedTrack.AddTrackFront(trackA.InFrontBy(hex));
+                        }
+                        foreach (HexIndex hex in trackB.GetTrack())
+                        {
+                            mergedTrack.AddTrackFront(trackB.InFrontBy(hex));
+                        }
+                        DraggedPart draggedPart = new DraggedPart();
+                        draggedParts.Clear();
+                        draggedPart.part = mergedTrack;
+                        draggedParts.Add(draggedPart);
+                        Volume.PlaySound(Assets.sounds.glyph_unbonding, 1);
+                    }
+
+
+                }
+            }
+        }
         if (wtwhtdfn.wtwhtdfn.MQSettings.Instance.mirrorTrack.Pressed())
         {
             if (draggedParts.Count == 1)

@@ -43,7 +43,16 @@ namespace wtwhtdfn
 
             [SettingsLabelKey("wtwhtdfn.settings.keybinds.reverseTrack")]
             public Keybinding mirrorTrack = new(";");
+            [SettingsLabelKey("wtwhtdfn.settings.keybinds.mergeTrack")]
+            public Keybinding mergeTrack = new("'");
         }
 
+
+        public static bool HexSide(HexIndex a, HexIndex b)
+        {
+            int x = a.Q - b.Q;
+            int y = a.R - b.R;
+            return Math.Abs(x) <= 1 && Math.Abs(y) <= 1 && x != y;
+        }
     }
 }
