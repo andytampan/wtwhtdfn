@@ -56,7 +56,7 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                     newPartA.SetHexPosAndUpdate(coordinate);
                     if (oldPart.trackHexes.Count < 2) return orig_Process(solEditScrn);
 
-                    HexIndex? handleHex = new HexIndex(0,0);
+                    HexIndex? handleHex = null;
                     
                     foreach (HexIndex hex in oldPart.trackHexes)
                     {
