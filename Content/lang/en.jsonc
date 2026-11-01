@@ -1,7 +1,7 @@
 {
   "wtwhtdfn": {
-    "": "Well, this will have to do for now.",
-    "description": "This is a Quality of Life work in progress mods",
+    "": "CitriusQOL",
+    "description": "This is a Quality of Life for Opus Magnum made by Citrius (lemony)",
     
     "settings": {
       "enableOverlap": "Enable overlap",
@@ -9,7 +9,8 @@
       "keybinds": {
         "disjointSplit": "Disjoint track split hotkey",
         "regularSplit": "Regular track split hotkey",
-        "reverseTrack": "Reverse track hotkey"
+        "reverseTrack": "Reverse track hotkey",
+        "mergeTrack": "Merge track hotkey"
       }
     }
 

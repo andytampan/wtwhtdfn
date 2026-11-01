@@ -46,11 +46,29 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                         Part mergedTrack = new Part(PartTypes.track, false);
                         mergedTrack.RemoveTrackFront();
                         foreach (HexIndex hex in trackA.GetTrack()) {
-                            mergedTrack.AddTrackFront(trackA.InFrontBy(hex));
+                            mergedTrack.AddTrackBack(trackA.InFrontBy(hex));
                         }
                         foreach (HexIndex hex in trackB.GetTrack())
                         {
-                            mergedTrack.AddTrackFront(trackB.InFrontBy(hex));
+                            mergedTrack.AddTrackBack(trackB.InFrontBy(hex));
+                        }
+                        DraggedPart draggedPart = new DraggedPart();
+                        draggedParts.Clear();
+                        draggedPart.part = mergedTrack;
+                        draggedParts.Add(draggedPart);
+                        Volume.PlaySound(Assets.sounds.glyph_unbonding, 1);
+                    }
+                    else if (wtwhtdfn.wtwhtdfn.HexSide(trackEndB, trackStartA))
+                    {
+                        Part mergedTrack = new Part(PartTypes.track, false);
+                        mergedTrack.RemoveTrackFront();
+                        foreach (HexIndex hex in trackB.GetTrack())
+                        {
+                            mergedTrack.AddTrackBack(trackB.InFrontBy(hex));
+                        }
+                        foreach (HexIndex hex in trackA.GetTrack())
+                        {
+                            mergedTrack.AddTrackBack(trackA.InFrontBy(hex));
                         }
                         DraggedPart draggedPart = new DraggedPart();
                         draggedParts.Clear();
@@ -128,6 +146,7 @@ public class patch_PartDraggingInputMode : PartDraggingInputMode
                     }
 
                     newPartA.trackHexes.Reverse();
+                    newPartB.trackHexes.Reverse();
                     draggedParts.Clear();
 
                     DraggedPart draggedPartA = new DraggedPart();
